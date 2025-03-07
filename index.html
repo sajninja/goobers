@@ -1,0 +1,191 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8" />
+    <title>Game testing</title>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+    
+    var config = {
+        type: Phaser.AUTO,
+        width: 1600,
+        height: 600,
+        physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: { y: 500 },
+            debug: false
+            }
+        },
+        scene: {
+            preload: preload,
+            create: create,
+            update: update
+        }
+    };
+
+    const game = new Phaser.Game(config);
+
+    // Variable init
+    var xVelocity;
+    var yVelocity;
+    var jumpCount;
+    var firstJump;
+
+    function preload() {
+        this.load.image('sky', 'assets/sky.png');
+        this.load.image('ground', 'assets/ground.png');
+        this.load.image('player', 'assets/player.png');
+        this.load.image('wall', 'assets/wall.png');
+        this.load.image('alli', 'assets/alli.png');
+        this.load.image('chase', 'assets/chase.png');
+        this.load.image('reggie', 'assets/reggie.png');
+        this.load.image('ronica', 'assets/ronica.png');
+        this.load.image('ub', 'assets/ub.png');
+        xVelocity = 0;
+        yVelocity = 0;
+    }
+    
+    function create() {
+        // Image, Sprite, and Physics creation
+        // this.add.image(400, 300, 'sky');
+
+        // grounds = this.physics.add.staticGroup();
+        // grounds.create(400, 575, 'ground');
+
+        // walls = this.physics.add.staticGroup();
+        // walls.create(700, 500, 'wall');
+
+        player = this.physics.add.sprite(500, 500, 'player');
+        player.setCollideWorldBounds(true);
+
+        // nerds = this.physics.add.Group(this.physics, this.scene);
+        // nerds.create(100, 100, 'alli');
+        // nerds.create(500, 100, 'chase');
+        // nerds.create(250, 100, 'reggie');
+        // nerds.create(250, 100, 'ronica');
+
+        alli = this.physics.add.sprite(100, 100, 'alli');
+        chase = this.physics.add.sprite(500, 100, 'chase');
+        reggie = this.physics.add.sprite(250, 100, 'reggie');
+        ronica = this.physics.add.sprite(600, 100, 'ronica');
+        ub = this.physics.add.sprite(700, 100, 'ub');
+
+        // GRRRRRR
+        
+        // Colliders
+        // this.physics.add.collider(player, grounds);
+        // this.physics.add.collider(player, walls);
+        this.physics.add.collider(player, alli);
+        this.physics.add.collider(player, chase);
+        this.physics.add.collider(player, reggie);
+        this.physics.add.collider(player, ronica);
+        this.physics.add.collider(player, ub);
+
+        this.physics.add.collider(alli, chase);
+        this.physics.add.collider(alli, reggie);
+        this.physics.add.collider(alli, ronica);
+        this.physics.add.collider(alli, ub);
+
+        this.physics.add.collider(chase, reggie);
+        this.physics.add.collider(chase, ronica);
+        this.physics.add.collider(chase, ub);
+
+        this.physics.add.collider(reggie, ronica);
+        this.physics.add.collider(reggie, ub);
+
+        this.physics.add.collider(ub, ronica);
+
+        alli.setBounce(1);
+        chase.setBounce(1);
+        reggie.setBounce(1);
+        ronica.setBounce(1);
+        ub.setBounce(1);
+
+        alli.setCollideWorldBounds(true);
+        chase.setCollideWorldBounds(true);
+        reggie.setCollideWorldBounds(true);
+        ronica.setCollideWorldBounds(true);
+        ub.setCollideWorldBounds(true);
+
+
+        // Controls
+        cursors = this.input.keyboard.createCursorKeys();
+    }
+
+    function update() {
+        if (player.body.velocity.x == 0) {
+            xVelocity = 0
+        };
+
+        if (cursors.left.isDown)
+        {
+            xVelocity -= 20;
+        }
+        else if (cursors.right.isDown)
+        {
+            xVelocity += 20;
+        }
+        else
+        {
+            if (xVelocity < 0) {
+                xVelocity += 20;
+            }
+            else if (xVelocity > 0)
+            {
+                xVelocity -= 20;
+            }
+
+            if (xVelocity > -20 && xVelocity < 20) {
+                xVelocity = 0;
+            }
+        }
+
+        // console.log(player.body.velocity.x)
+
+        xVelocity = Phaser.Math.Clamp(xVelocity, -500, 500)
+        player.setVelocityX(xVelocity);
+
+        // if (cursors.up.isDown && player.body.touching.down)
+        // {
+        //     player.setVelocityY(-150);
+        // }
+
+        // if (player.body.touching.down)
+        // {
+            jumpCount = 0;
+        // }
+
+        if (jumpCount < 3 && cursors.up.isDown && firstJump) {
+            jump();
+        }
+
+        if (cursors.up.isDown) {
+            firstJump = false;
+        }
+        else
+        {
+            firstJump = true;
+        }
+
+
+    }
+
+    function jump() {
+        // player.setVelocityY(-250);
+        player.setVelocityY(-500);
+        jumpCount++;
+    }
+
+</script>
+
+</body>
+</html>
